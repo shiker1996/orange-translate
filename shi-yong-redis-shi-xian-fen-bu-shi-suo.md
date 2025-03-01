@@ -106,7 +106,7 @@ end
 
 此时我们需要更好地指定我们的互斥规则：只有持有锁的客户端在锁有效时间内（如步骤3中获得的）终止其工作，减去一些时间（仅几毫秒），才可以保证。以补偿进程之间的时钟漂移）。
 
-本文包含有关需要绑定时钟_漂移_的类似系统的更多信息：[租约：分布式文件缓存一致性的高效容错机制](http://dl.acm.org/citation.cfm?id=74870)。
+本文包含有关需要绑定时&#x949F;_&#x6F02;&#x79FB;_&#x7684;类似系统的更多信息：[租约：分布式文件缓存一致性的高效容错机制](http://dl.acm.org/citation.cfm?id=74870)。
 
 #### 失败重试 <a href="#retry-on-failure" id="retry-on-failure"></a>
 
@@ -156,7 +156,7 @@ end
 
 为了保证这一点，我们只需要让一个实例在崩溃后不可用的时间至少比[`TTL`](https://redis.io/commands/ttl)我们使用的最大值长一点。这是实例崩溃时存在的锁的所有键失效并自动释放所需的时间。
 
-使用_延迟重启，_即使没有任何可用的 Redis 持久性，基本上也可以实现安全性，但请注意，这可能会转化为可用性损失。例如，如果大多数实例崩溃，系统将变得全局不可用[`TTL`](https://redis.io/commands/ttl)（这里全局意味着在此期间根本没有资源可锁定）。
+使&#x7528;_&#x5EF6;迟重启，_&#x5373;使没有任何可用的 Redis 持久性，基本上也可以实现安全性，但请注意，这可能会转化为可用性损失。例如，如果大多数实例崩溃，系统将变得全局不可用[`TTL`](https://redis.io/commands/ttl)（这里全局意味着在此期间根本没有资源可锁定）。
 
 #### 让算法更可靠：扩展锁 <a href="#making-the-algorithm-more-reliable-extending-the-lock" id="making-the-algorithm-more-reliable-extending-the-lock"></a>
 

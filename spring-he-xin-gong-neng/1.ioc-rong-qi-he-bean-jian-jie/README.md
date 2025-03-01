@@ -46,7 +46,7 @@
 
 换句话说，当您定义 bean 定义并将其限定为单例时，Spring IoC 容器会创建该 bean 定义所定义的对象的一个实例。此单个实例存储在此类单例 bean 的缓存中，并且该命名 bean 的所有后续请求和引用都返回缓存的对象。下图显示了单例作用域的工作原理：
 
-![单身人士](https://docs.spring.io/spring-framework/reference/\_images/singleton.png)
+![单身人士](https://docs.spring.io/spring-framework/reference/_images/singleton.png)
 
 Spring 的单例 bean 概念不同于设计模式 (GoF) 模式书中定义的单例模式。GoF 单例对对象的作用域进行硬编码，以便每个 ClassLoader 创建一个且仅一个特定类的实例。Spring 单例的作用域最好描述为每个容器和每个 bean。这意味着，如果您在单个 Spring 容器中为特定类定义一个 bean，则 Spring 容器会创建该 bean 定义所定义的类的一个且仅一个实例。单例作用域是 Spring 中的默认作用域。要将 bean 定义为 XML 中的单例，您可以定义一个 bean，如下例所示：
 
@@ -63,7 +63,7 @@ bean 部署的非单例原型作用域导致每次对特定 bean 发出请求时
 
 下图说明了 Spring 原型作用域：
 
-![原型](https://docs.spring.io/spring-framework/reference/\_images/prototype.png)
+![原型](https://docs.spring.io/spring-framework/reference/_images/prototype.png)
 
 （数据访问对象 (DAO) 通常不配置为原型，因为典型的 DAO 不保存任何会话状态。我们更容易重用单例图的核心。）
 
@@ -730,7 +730,7 @@ public interface BeanNameAware {
 
 父 bean 不能自己实例化，因为它不完整，而且它也显式标记为`abstract`. 当定义为`abstract`时，它只能用作纯模板 bean 定义，用作子定义的父定义。尝试单独使用这样的`abstract`父 bean，通过将其引用为另一个 bean 的 ref 属性或`getBean()`使用父 bean ID 进行显式调用会返回错误。同样，容器的内部 `preInstantiateSingletons()`方法会忽略定义为抽象的 bean 定义。
 
-默认情况下`ApplicationContext`预实例化所有单例。因此，重要的是（至少对于单例 bean），如果您有一个（父）bean 定义，您打算仅将其用作模板，并且此定义指定了一个类，则必须确保将_抽象_属性设置为_true_，否则应用程序上下文将实际（尝试）预实例化`abstract`bean。
+默认情况下`ApplicationContext`预实例化所有单例。因此，重要的是（至少对于单例 bean），如果您有一个（父）bean 定义，您打算仅将其用作模板，并且此定义指定了一个类，则必须确保&#x5C06;_&#x62BD;&#x8C61;_&#x5C5E;性设置&#x4E3A;_&#x74;rue_，否则应用程序上下文将实际（尝试）预实例化`abstract`bean。
 
 #### 1.8. 容器扩展点
 
@@ -840,7 +840,7 @@ org.springframework.scripting.groovy.GroovyMessenger@272961
 
 **1.8.2. 自定义配置元数据`BeanFactoryPostProcessor`**
 
-我们要看的下一个扩展点是 `org.springframework.beans.factory.config.BeanFactoryPostProcessor`. 此接口的语义与 的语义相似，但`BeanPostProcessor`有一个主要区别：`BeanFactoryPostProcessor`对 bean 配置元数据进行操作。也就是说，Spring IoC 容器允许`BeanFactoryPostProcessor`读取配置元数据并可能在容器实例化除实例之外的任何 bean_之前_`BeanFactoryPostProcessor`更改它。
+我们要看的下一个扩展点是 `org.springframework.beans.factory.config.BeanFactoryPostProcessor`. 此接口的语义与 的语义相似，但`BeanPostProcessor`有一个主要区别：`BeanFactoryPostProcessor`对 bean 配置元数据进行操作。也就是说，Spring IoC 容器允许`BeanFactoryPostProcessor`读取配置元数据并可能在容器实例化除实例之外的任何 bea&#x6E;_&#x4E4B;前_`BeanFactoryPostProcessor`更改它。
 
 您可以配置多个实例，并且可以通过设置属性`BeanFactoryPostProcessor`来控制这些`BeanFactoryPostProcessor`实例的运行顺序。`order`但是，您只能在`BeanFactoryPostProcessor`实现 `Ordered`接口时设置此属性。如果你自己写`BeanFactoryPostProcessor`，你也应该考虑实现`Ordered`接口。[`BeanFactoryPostProcessor`](https://docs.spring.io/spring-framework/docs/5.3.22/javadoc-api/org/springframework/beans/factory/config/BeanFactoryPostProcessor.html) 有关更多详细信息，请参阅和[`Ordered`](https://docs.spring.io/spring-framework/docs/5.3.22/javadoc-api/org/springframework/core/Ordered.html)接口的 javadoc 。
 
@@ -1046,7 +1046,7 @@ public class MovieRecommender {
 
 从 Spring Framework 4.3 开始，如果目标 bean 仅定义一个构造函数开始，则不再需要对此类构造函数进行`@Autowired`注解。但是，如果有多个构造函数可用并且没有主/默认构造函数，则必须至少对其中一个构造函数进行`@Autowired`注解，以指示容器使用哪一个构造函数。[有关详细信息，请参阅构造函数解析](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-autowired-annotation-constructor-resolution)的讨论 。
 
-您还可以将`@Autowired`注解应用于_传统_的setter 方法，如以下示例所示：
+您还可以将`@Autowired`注解应用&#x4E8E;_&#x4F20;&#x7EDF;_&#x7684;setter 方法，如以下示例所示：
 
 ```java
 public class SimpleMovieLister {
@@ -1932,13 +1932,13 @@ public class AppConfig  {
 
 默认情况下，使用`@Component`、`@Repository`、`@Service`、`@Controller`、 `@Configuration`注解的类或本身带有`@Component`注解的自定义注解是唯一检测到的候选组件。但是，您可以通过应用自定义过滤器来修改和扩展此行为。将它们添加为 `@ComponentScan` 注释的 `includeFilters` 或 `exceptFilters` 属性（或者作为 XML 配置中`<context:component-scan>`元素的`<context:include-filter />` 或 `<context:exclude-filter />` 子元素）。每个过滤器元素都需要类型和表达式属性。下表描述了过滤选项：
 
-| 过滤器类型   | 示例表达式                        | 描述                                                  |
-| ------- | ---------------------------- | --------------------------------------------------- |
-| 注解（默认）  | `org.example.SomeAnnotation` | 在目标组件的类型级别_存在_或_元存在_的注解。                            |
-| 可分配的    | `org.example.SomeClass`      | 目标组件可分配（扩展或实现）的类（或接口）。                              |
-| aspectj | `org.example..*Service+`     | 要由目标组件匹配的 AspectJ 类型表达式。                            |
-| 正则表达式   | `org\.example\.Default.*`    | 与目标组件的类名匹配的正则表达式。                                   |
-| 自定义     | `org.example.MyTypeFilter`   | 接口的自定义实现`org.springframework.core.type.TypeFilter`。 |
+| 过滤器类型   | 示例表达式                        | 描述                                                                 |
+| ------- | ---------------------------- | ------------------------------------------------------------------ |
+| 注解（默认）  | `org.example.SomeAnnotation` | 在目标组件的类型级&#x522B;_&#x5B58;&#x5728;_&#x6216;_元存&#x5728;_&#x7684;注解。 |
+| 可分配的    | `org.example.SomeClass`      | 目标组件可分配（扩展或实现）的类（或接口）。                                             |
+| aspectj | `org.example..*Service+`     | 要由目标组件匹配的 AspectJ 类型表达式。                                           |
+| 正则表达式   | `org\.example\.Default.*`    | 与目标组件的类名匹配的正则表达式。                                                  |
+| 自定义     | `org.example.MyTypeFilter`   | 接口的自定义实现`org.springframework.core.type.TypeFilter`。                |
 
 以下示例显示了忽略所有`@Repository`注解并使用“存根”存储库的配置：
 

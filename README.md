@@ -1,5 +1,14 @@
-# Spring Boot Reference Documentation（中文）
+# hello，这里是翻译橙
 
-Hello，本项目是对[springboot官方文档](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using)的中文翻译版，对应的gitbook地址为[翻译橙](https://doc.shiker.tech/)
+#### 翻译橙
 
-如果你想参与到[springboot官方文档](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using)的翻译中，请到主站联系我，或者点击贡献项目提出issue并star！
+翻译橙是一个专注于存放翻译后的官方文档和其他书籍资料的网站。我们的目标是为用户提供高质量的翻译内容，帮助他们更好地理解和使用各种技术文档和书籍。
+
+#### 主要功能
+
+* **文档存储**：轻松快捷地访问各类翻译文档。
+* **多语种支持**：提供多种语言的文档翻译，满足不同用户的需求。
+* **定期更新**：不断添加新的翻译资源，保持资料的时效性。
+* **用户反馈**：用户可以提交反馈和建议，帮助我们提升翻译质量。
+
+我们致力于为广大的读者群体提供一个可靠的翻译文档平台，使信息的获取更为简单和高效。
