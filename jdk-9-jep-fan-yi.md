@@ -1,16 +1,16 @@
 # JDK 9 JEP翻译
 
-### \[功能] JEP 102: 进程 API 更新
+#### \[功能] JEP 102: 进程 API 更新
 
-#### 摘要
+**摘要**
 
 优化操作系统进程控制和管理的 API。
 
-#### 动机
+**动机**
 
 当前 API 的限制往往迫使开发者求助于本地代码。
 
-#### 描述
+**描述**
 
 ava SE 对本地操作系统进程的支持有限。它提供了一个基本的 API 来设置环境并启动进程。自 Java SE 7 以来，进程流可以被重定向到文件、管道，或者可以被继承。一旦启动，API 可以用来销毁进程和/或等待进程终止。
 
@@ -22,26 +22,26 @@ ProcessHandles 可以用来销毁进程和监控进程的存活状态。通过 P
 
 对进程信息和进程控制访问受安全管理器权限限制，并且受限于正常的操作系统访问控制。
 
-#### 示例
+**示例**
 
 比如获取本地终端的命令行：
 
 ```
-    public static void main(String[] args) {
-        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "dir");
-        try {
-            Process process = pb.start();
-            System.out.println("pid: " + process.toHandle().pid());
-            System.out.println("info: " + process.toHandle().info());
-            System.out.println("args: " + process.toHandle().info().arguments());
-            System.out.println("start time: " + process.toHandle().info().startInstant());
-            process.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    public static void main(String[] args) {
+        ProcessBuilder pb = new ProcessBuilder("cmd.exe", "/c", "dir");
+        try {
+            Process process = pb.start();
+            System.out.println("pid: " + process.toHandle().pid());
+            System.out.println("info: " + process.toHandle().info());
+            System.out.println("args: " + process.toHandle().info().arguments());
+            System.out.println("start time: " + process.toHandle().info().startInstant());
+            process.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 ```
 
 输出信息：
@@ -53,9 +53,9 @@ args: Optional.empty
 start time: Optional[2025-04-12T10:27:42.529Z]
 ```
 
-### \[孵化] JEP 110: HTTP/2 客户端
+#### \[孵化] JEP 110: HTTP/2 客户端
 
-#### 摘要
+**摘要**
 
 定义一个新的 HTTP 客户端 API，该 API 实现 HTTP/2 和 WebSocket，并可以替代传统的 `HttpURLConnection` API。该 API 将以**孵化模块**的形式提供， 如 JEP 11 中定义的那样，在 JDK 9 中交付。这意味着： [JEP 11](http://openjdk.java.net/jeps/11)，
 
@@ -63,7 +63,7 @@ start time: Optional[2025-04-12T10:27:42.529Z]
 * API 将位于 `jdk.incubtor` 命名空间下。
 * 该模块默认情况下在编译或运行时不会解析。
 
-#### 描述
+**描述**
 
 已经为 JDK 9 进行了原型设计工作，为 HTTP 客户端、请求和响应定义了单独的类。使用了构建者模式来区分可变实体和不可变产品。定义了同步阻塞模式用于发送和接收，并基于 `java.util.concurrent.CompletableFuture` 定义了异步模式。
 
@@ -88,25 +88,25 @@ API 中最可能需要进一步工作的部分是 HTTP/2 多响应（服务器�
 
 HTTP/2 代理将在后续的更改中实现。
 
-### \[JVM] JEP 143：改进竞争锁
+#### \[JVM] JEP 143：改进竞争锁
 
-### \[JVM] JEP 158：统一 JVM 日志
+#### \[JVM] JEP 158：统一 JVM 日志
 
-### \[JVM] JEP 165: 编译器控制
+#### \[JVM] JEP 165: 编译器控制
 
-### \[功能] JEP 193: 变量句柄
+#### \[功能] JEP 193: 变量句柄
 
-#### 摘要
+**摘要**
 
 定义一种标准方法来调用对象字段和数组元素的各种 `java.util.concurrent.atomic` 和 `sun.misc.Unsafe` 操作，一组围栏操作以实现内存排序的精细控制，以及一个标准可达性围栏操作，以确保引用的对象保持强可达性。
 
-#### 动机
+**动机**
 
 随着 Java 中的并发和并行编程不断扩展，程序员越来越感到沮丧，因为他们无法使用 Java 构造来对单个类字段进行原子或有序操作；例如，原子地增加 `count` 字段。到目前为止，实现这些效果的唯一方法是通过独立的 `AtomicInteger` （增加了空间开销和额外的并发问题来管理间接引用）或者在某些情况下，使用原子 `FieldUpdater` （通常遇到比操作本身更多的开销），或者使用不安全（且不可移植且不受支持的） `sun.misc.Unsafe` JVM 内联 API。内联 API 更快，因此它们已被广泛使用，这损害了安全性和可移植性。
 
 没有这个 JEP，随着原子 API 扩展到覆盖更多的访问一致性策略（与最近的 C++11 内存模型一致）作为 Java 内存模型修订的一部分，这些问题预计会变得更加严重。
 
-#### 描述
+**描述**
 
 变量句柄是对变量的类型引用，支持在多种访问模式下对变量进行读写访问。支持的变量类型包括实例字段、静态字段和数组元素。其他变量类型也在考虑之中，可能得到支持，例如数组视图、将字节数组或 char 数组视为 long 数组，以及由 `ByteBuffer` s 描述的堆外区域的位置。
 
@@ -275,7 +275,7 @@ boolean r = (boolean) mhToVhCompareAndSet.invokeExact(VH_FOO_FIELD_I, f, 0, 1);
 
 `VarHandle` 实现应尽量减少对 `java.lang.invoke` 包内其他类的依赖，以避免增加启动时间和在静态初始化期间出现循环依赖。例如， `ConcurrentHashMap` 被此类使用，如果 `ConcurrentHashMap` 被修改为使用 `VarHandles` ，则需要确保不会引入循环依赖。使用 `ThreadLocalRandom` 及其使用 `AtomicInteger` 可能产生其他更微妙的循环。同时，也希望包含 `VarHandle` 方法调用的方法不会导致 C2 HotSpot 编译时间不当地增加。
 
-#### 示例
+**示例**
 
 我们通过一个简单的 Java 示例来展示 `VarHandle` 的使用，包括：
 
@@ -285,41 +285,41 @@ boolean r = (boolean) mhToVhCompareAndSet.invokeExact(VH_FOO_FIELD_I, f, 0, 1);
 
 ```
 public class JEP193 {
-    static class MyData {
-        int value = 42;
-    }
-
-    public static void main(String[] args) throws Exception {
-        // 创建一个实例
-        MyData data = new MyData();
-
-        // 获取 VarHandle 对象
-        VarHandle valueHandle = MethodHandles.lookup()
-                .in(MyData.class)
-                .findVarHandle(MyData.class, "value", int.class);
-
-        // 普通读取
-        System.out.println("原始值: " + valueHandle.get(data));  // 输出 42
-
-        // 普通写入
-        valueHandle.set(data, 100);
-        System.out.println("更新后: " + valueHandle.get(data)); // 输出 100
-
-        // 原子 CAS 操作
-        boolean success = valueHandle.compareAndSet(data, 100, 200);
-        System.out.println("CAS 是否成功: " + success);         // 输出 true
-        System.out.println("CAS 后值: " + valueHandle.get(data)); // 输出 200
-    }
+    static class MyData {
+        int value = 42;
+    }
+​
+    public static void main(String[] args) throws Exception {
+        // 创建一个实例
+        MyData data = new MyData();
+​
+        // 获取 VarHandle 对象
+        VarHandle valueHandle = MethodHandles.lookup()
+                .in(MyData.class)
+                .findVarHandle(MyData.class, "value", int.class);
+​
+        // 普通读取
+        System.out.println("原始值: " + valueHandle.get(data));  // 输出 42
+​
+        // 普通写入
+        valueHandle.set(data, 100);
+        System.out.println("更新后: " + valueHandle.get(data)); // 输出 100
+​
+        // 原子 CAS 操作
+        boolean success = valueHandle.compareAndSet(data, 100, 200);
+        System.out.println("CAS 是否成功: " + success);         // 输出 true
+        System.out.println("CAS 后值: " + valueHandle.get(data)); // 输出 200
+    }
 }
 ```
 
-### \[JVM] JEP 197: 分段代码缓存
+#### \[JVM] JEP 197: 分段代码缓存
 
-#### 摘要
+**摘要**
 
 将代码缓存划分为不同的段，每个段包含特定类型的编译代码，以提高性能并支持未来的扩展。
 
-#### 目标
+**目标**
 
 * 区分非方法、已分析和未分析代码
 * 由于跳过非方法代码的专用迭代器，扫描时间更短
@@ -333,7 +333,7 @@ public class JEP193 {
   * 可实现按代码堆进行细粒度锁定的可能性
   * 未来代码和元数据的分离（参见 [JDK-7072317](https://bugs.openjdk.java.net/browse/JDK-7072317)）
 
-#### 描述
+**描述**
 
 而不是拥有单个代码堆，代码缓存被分割成不同的代码堆，每个代码堆包含特定类型的编译代码。这种设计使我们能够分离具有不同属性的代码。存在三种不同的顶级编译代码类型：
 
@@ -365,19 +365,19 @@ public class JEP193 {
   * DTrace ustack helper 脚本 (`jhelper.d`)：解析编译的 Java 方法名称
   * Pstack 支持库 (`libjvm_db.c`)：编译的 Java 方法堆栈跟踪
 
-### \[JVM] JEP 199：智能 Java 编译，第二阶段
+#### \[JVM] JEP 199：智能 Java 编译，第二阶段
 
-### \[功能] JEP 200：模块化 JDK
+#### \[功能] JEP 200：模块化 JDK
 
-#### 摘要
+**摘要**
 
 使用由 [JSR 376](http://openjdk.java.net/projects/jigsaw/spec/) 指定并由 [JEP 261](http://openjdk.java.net/jeps/261) 实现的 Java 平台模块系统来模块化 JDK。
 
-#### 动机
+**动机**
 
 [Project Jigsaw](http://openjdk.java.net/projects/jigsaw/) 旨在设计和实现 Java SE 平台的标准模块系统，并将其应用于平台本身以及 JDK。其主要目标是使平台的实现更容易扩展到小型设备，提高安全性和可维护性，提升应用程序性能，并为开发者提供更好的大型编程工具。
 
-#### 描述
+**描述**
 
 **设计原则**
 
@@ -412,13 +412,13 @@ JDK 的模块结构可以表示为一个图：每个模块是一个节点，如�
 
 所有模块的表格总结，包括 Linux/AMD64 构建的占用指标，可在 [此处 ](https://bugs.openjdk.java.net/secure/attachment/72527/module-summary.html)获取。
 
-### \[优化] JEP 211: 在导入语句中省略弃用警告
+#### \[优化] JEP 211: 在导入语句中省略弃用警告
 
-#### 摘要
+**摘要**
 
 自 Java SE 8 起，根据 Java 语言规范的合理解释，Java 编译器在按名称导入已弃用类型或静态导入已弃用成员（方法、字段、嵌套类型）时必须发出弃用警告。这些警告没有提供有用信息，不应强制要求。弃用成员的实际使用应保留弃用警告。
 
-#### 描述
+**描述**
 
 从规范角度来看，所需更改很小。在 JLS 8 中，关于 `@Deprecated` 的部分说明：
 
@@ -434,23 +434,23 @@ JDK 的模块结构可以表示为一个图：每个模块是一个节点，如�
 
 在 `javac` 引用实现中，将会有一个简单的检查来跳过导入语句以查找弃用警告。
 
-### \[优化] JEP 212: 解决 Lint 和 Doclint 警告
+#### \[优化] JEP 212: 解决 Lint 和 Doclint 警告
 
-#### 摘要
+**摘要**
 
 JDK 代码库包含许多由 `javac` 报告的 lint 和 doclint 错误。这些警告应该被解决，至少对于平台的基本部分。
 
-#### 描述
+**描述**
 
 本 JEP 提议完成对 JDK 8 和 JDK 9 中正在进行中的警告修复工作，并将之前向 jdk9-dev 提出的源代码改进子集正式化。大多数警告通过修改方法体内部结构得到解决。解决一些原始类型警告需要更改方法签名，例如将参数类型从原始的 `java.lang.Class` 更改为 `java.lang.Class<?>` 或更具体的类型。任何 API 更改都将保持在 JDK 的一般演进策略之内。
 
-### \[优化] JEP 213: 磨削项目币
+#### \[优化] JEP 213: 磨削项目币
 
-#### 摘要
+**摘要**
 
 包含在 JDK 7 / Java SE 7 中的 Project Coin / JSR 334 的微小语言更改易于使用，并在实践中表现良好。然而，一些修正可以解决这些更改的粗糙边缘。此外，使用下划线（ `"_"` ）作为标识符，从 Java SE 8 开始会生成警告，应将其转换为错误在 Java SE 9 中。还提议允许接口有私有方法。
 
-#### 描述
+**描述**
 
 提出对 Java 编程语言进行五项小的修正：
 
@@ -462,7 +462,7 @@ JDK 代码库包含许多由 `javac` 报告的 lint 和 doclint 错误。这些�
 
 在 Java 语言变化的范围内，这些改进都是非常小的改动。 `@SafeVarags` 的变化可能只涉及对规范中的一两句话进行修改， `javac` 的改动规模也类似。然而，就像任何 Java 语言变化一样，必须小心处理需要更新的平台所有部分。
 
-#### 示例
+**示例**
 
 1. **允许菱形操作符 `< >` 用于匿名类中**
 
@@ -503,13 +503,13 @@ Java 之前不允许你在私有方法或 lambda 表达式中用 `@SafeVarargs`�
 
 虽然 JEP 213 并未引入该功能，但和它一脉相承。Java 9 开始允许接口中定义 `private` 方法用于重构 default/static 方法中的公共逻辑。
 
-### \[JVM] JEP 214: 移除 JDK 8 中已弃用的 GC 组合
+#### \[JVM] JEP 214: 移除 JDK 8 中已弃用的 GC 组合
 
-#### 摘要
+**摘要**
 
 通过 JEP 173 移除 JDK 8 中已弃用的 GC 组合。
 
-#### 描述
+**描述**
 
 JEP 173 中列出的已弃用的 GC 组合的控制标志，以及启用 CMS 前台收集器（作为 JDK-8027876 的一部分已弃用）的标志将从代码库中移除。这意味着将不再打印有关它们的警告消息；如果使用这些标志，JVM 将无法启动。
 
@@ -530,15 +530,15 @@ CMS foreground     : -XX:+UseCMSCollectionPassing
 
 对于 ParNew + SerialOld 组合，此 JEP 的工作也将包括性能测试，比较 ParNew + SerialOld 与 ParallelScavenge + SerialOld。这应该会导致从 ParNew + SerialOld 迁移到 ParallelScavenge + SerialOld 的调整建议。
 
-### \[JVM] JEP 215: javac 的分层归因
+#### \[JVM] JEP 215: javac 的分层归因
 
-### \[JVM] JEP 216: 正确处理导入语句
+#### \[JVM] JEP 216: 正确处理导入语句
 
-#### 摘要
+**摘要**
 
 修复 `javac` 以正确接受和拒绝程序，无论 `import` 语句和 `extends` 以及 `implements` 子句的顺序如何。
 
-#### 描述
+**描述**
 
 `javac` 在编译类时使用几个阶段。考虑到 `导入` 处理，两个重要的阶段是：
 
@@ -555,15 +555,15 @@ CMS foreground     : -XX:+UseCMSCollectionPassing
 
 ```
 package P;
-
+​
 import static P.Outer.Nested.*;
 import P.Q.*;
-
+​
 public class Outer {
-    public static class Nested implements I {
-    }
+    public static class Nested implements I {
+    }
 }
-
+​
 package P.Q;
 public interface I {
 }
@@ -586,13 +586,13 @@ public interface I {
 
 ```
 package P;
-
+​
 import static P.Outer.Nested.*;
-
+​
 public class Outer {
-    public static class Nested<T extends I> {
-        static class I { }
-    }
+    public static class Nested<T extends I> {
+        static class I { }
+    }
 }
 ```
 
@@ -600,25 +600,25 @@ public class Outer {
 
 预期这个更改将允许 `javac` 接受目前被拒绝的程序，但不会拒绝目前被接受的程序。
 
-### \[JVM] JEP 217: 注解管道 2.0
+#### \[JVM] JEP 217: 注解管道 2.0
 
-#### 摘要
+**摘要**
 
 重新设计 `javac` 注解管道，以更好地满足注解和注解处理工具的需求。
 
-#### 描述
+**描述**
 
 重构 `javac` 注解管道。这不应该对外部 产生明显影响，除非我们在修复错误和改进正确性方面 进行。第一步是提高测试覆盖率，以便我们可以衡量和评估 我们的退出标准。之后将进行一系列增量 重构。这项工作将在 OpenJDK 中完成 [注解管道 2.0 项目 ](http://openjdk.java.net/projects/anno-pipeline/)。
 
 关于类型注解，`JavaDoc` 工具存在一些相关问题。然而，`JavaDoc` 作为 [JavaDoc.Next 项目 ](http://openjdk.java.net/projects/javadoc-next/)的一部分，正在进行重大改进。这项工作的一部分包括将 `JavaDoc` 转换为使用 `javax.lang.model` API 而不是较旧的 `com.sun.javadoc` API。因此，本项目的工作目标不是对 `javadoc` 进行操作 确保注释，包括类型注释，得到呈现 正确。预计作为 JavaDoc.Next 项目的一部分， `javadoc`将得到增强，以利用对 Java 文档注释的更新 本项目目标的是 `javax.lang.model` API。
 
-### \[功能] JEP 219: 数据报传输层安全（DTLS）
+#### \[功能] JEP 219: 数据报传输层安全（DTLS）
 
-#### 摘要
+**摘要**
 
 定义数据报传输层安全（DTLS）版本 1.0（RFC 4347）和 1.2（RFC 6347）的 API。
 
-#### 动机
+**动机**
 
 支持 DTLS 对于满足越来越多的数据报兼容应用程序的安全传输需求至关重要。RFC 4347 列出了一些为什么 TLS 对于这些类型的应用程序来说不够充分的原因：
 
@@ -635,7 +635,7 @@ public class Outer {
 
 Google Chrome 和 Firefox 现在支持 DTLS-SRTP 用于 Web 实时通信（WebRTC）。主要的 TLS 提供商和实现，包括 OpenSSL、GnuTLS 和 Microsoft SChannel，都支持 DTLS 版本 1.0 和 1.2。
 
-#### 描述
+**描述**
 
 我们预计 DTLS API 和实现将相对较小。新的 API 应该是传输无关的，类似于 `javax.net.ssl.SSLEngine` 。随着工作的进展，将在此处添加有关 API 的更多详细信息。一些初步的设计考虑因素如下：
 
@@ -644,7 +644,7 @@ Google Chrome 和 Firefox 现在支持 DTLS-SRTP 用于 Web 实时通信（WebRT
 3. DTLS 实现应最多消耗或产生一个 TLS 记录，以便每个解包或打包操作，这样记录就可以在数据报层单独交付，或者在交付顺序出错时更容易重新组装。
 4. 如果需要，应用程序负责相应地组装顺序错乱的应用数据。DTLS API 应提供对每个 DTLS 消息中应用程序数据的访问。
 
-#### 示例
+**示例**
 
 JEP 219（[https://openjdk.org/jeps/219](https://openjdk.org/jeps/219)）引入了对 **DTLS（Datagram Transport Layer Security）1.0** 的支持，这是在 Java 9 中添加到 `JSSE`（Java Secure Socket Extension）中的。
 
@@ -673,36 +673,36 @@ import javax.net.ssl.*;
 import java.net.*;
 import java.nio.*;
 import java.security.KeyStore;
-
+​
 public class DTLSServer {
-    public static void main(String[] args) throws Exception {
-        int port = 4444;
-        DatagramSocket socket = new DatagramSocket(port);
-
-        // 加载密钥库
-        KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(DTLSServer.class.getResourceAsStream("/server_keystore.jks"), "password".toCharArray());
-
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(ks, "password".toCharArray());
-
-        SSLContext context = SSLContext.getInstance("DTLS");
-        context.init(kmf.getKeyManagers(), null, null);
-
-        SSLEngine engine = context.createSSLEngine();
-        engine.setUseClientMode(false);
-        engine.beginHandshake();
-
-        System.out.println("DTLS server listening on port " + port);
-        
-        // 简化处理：只接收并打印一条信息
-        byte[] buf = new byte[2048];
-        DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        socket.receive(packet);
-
-        System.out.println("Received raw UDP packet (not yet decrypted)");
-        // 真实使用中需要调用 engine.unwrap() 来处理 DTLS 解密和握手
-    }
+    public static void main(String[] args) throws Exception {
+        int port = 4444;
+        DatagramSocket socket = new DatagramSocket(port);
+​
+        // 加载密钥库
+        KeyStore ks = KeyStore.getInstance("JKS");
+        ks.load(DTLSServer.class.getResourceAsStream("/server_keystore.jks"), "password".toCharArray());
+​
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(ks, "password".toCharArray());
+​
+        SSLContext context = SSLContext.getInstance("DTLS");
+        context.init(kmf.getKeyManagers(), null, null);
+​
+        SSLEngine engine = context.createSSLEngine();
+        engine.setUseClientMode(false);
+        engine.beginHandshake();
+​
+        System.out.println("DTLS server listening on port " + port);
+        
+        // 简化处理：只接收并打印一条信息
+        byte[] buf = new byte[2048];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        socket.receive(packet);
+​
+        System.out.println("Received raw UDP packet (not yet decrypted)");
+        // 真实使用中需要调用 engine.unwrap() 来处理 DTLS 解密和握手
+    }
 }
 ```
 
@@ -710,20 +710,20 @@ public class DTLSServer {
 
 ```
 import java.net.*;
-
+​
 public class DTLSClient {
-    public static void main(String[] args) throws Exception {
-        DatagramSocket socket = new DatagramSocket();
-        InetAddress address = InetAddress.getByName("localhost");
-
-        String message = "Hello DTLS Server!";
-        byte[] buf = message.getBytes();
-
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4444);
-        socket.send(packet);
-
-        System.out.println("Sent UDP packet (not encrypted)");
-    }
+    public static void main(String[] args) throws Exception {
+        DatagramSocket socket = new DatagramSocket();
+        InetAddress address = InetAddress.getByName("localhost");
+​
+        String message = "Hello DTLS Server!";
+        byte[] buf = message.getBytes();
+​
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4444);
+        socket.send(packet);
+​
+        System.out.println("Sent UDP packet (not encrypted)");
+    }
 }
 ```
 
@@ -736,13 +736,13 @@ public class DTLSClient {
 | 应用场景 | 音视频通话、在线游戏、IoT 等                          |
 | 使用难点 | 手动处理握手、数据包重发、超时逻辑                         |
 
-### \[功能] JEP 220: 模块化运行时镜像
+#### \[功能] JEP 220: 模块化运行时镜像
 
-#### 摘要
+**摘要**
 
 对 JDK 和 JRE 运行时镜像进行重构，以适应模块化并提高性能、安全性和可维护性。定义一个新的 URI 方案来命名存储在运行时镜像中的模块、类和资源，而不泄露镜像的内部结构或格式。根据需要修订现有规范以适应这些更改。
 
-#### 描述
+**描述**
 
 **当前运行时图像结构**
 
@@ -791,7 +791,7 @@ OS_ARCH="amd64"
 
 运行时图像的根目录还包含由构建系统生成的 `release` 文件。为了便于识别运行时图像中包含的模块， `release` 文件包含一个新属性 `MODULES` ，它是一个由空格分隔的模块名称列表。列表根据模块的依赖关系进行拓扑排序，因此 `java.base` 模块始终排在第一位。
 
-#### 说明
+**说明**
 
 文件结构对比：
 
@@ -815,13 +815,13 @@ JAVA_HOME/
       |- java.sql.jmod
 ```
 
-### \[功能] JEP 221：新的 Doclet API
+#### \[功能] JEP 221：新的 Doclet API
 
-#### 摘要
+**摘要**
 
 提供一个替代的 [Doclet API](http://docs.oracle.com/javase/8/docs/jdk/api/javadoc/doclet/index.html)，以利用适当的 Java SE 和 JDK API，并更新标准 doclet 以使用新 API
 
-#### 描述
+**描述**
 
 新的 Doclet API 在 jdk.javadoc.doclet 包中声明。它使用语言模型 API 和编译树 API。
 
@@ -829,7 +829,7 @@ javadoc 工具更新为识别针对新 Doclet API 编写的 doclet。为了过�
 
 现有的标准 doclet 支持一个名为 [Taglet API](http://docs.oracle.com/javase/8/docs/technotes/guides/javadoc/taglet/overview.html). Taglets 允许用户定义自定义标签，这些标签可用于文档注释，并指定这些标签在生成的文档中的显示方式。更新的标准 doclet 支持更新的 taglet API。
 
-#### 说明
+**说明**
 
 JEP 221（[https://openjdk.org/jeps/221](https://openjdk.org/jeps/221)）引入了 **全新的标准 Doclet API（JavaDoc 工具插件系统）**，这是 Java 9 的一个重大变化，目标是：
 
@@ -876,17 +876,17 @@ import javax.tools.Diagnostic.Kind;
 import java.util.Set;
 import java.util.Locale;
 import java.util.List;
-
+​
 public class MyDoclet extends StandardDoclet {
-    @Override
-    public boolean run(DocletEnvironment env) {
-        for (Element e : env.getIncludedElements()) {
-            if (e instanceof TypeElement) {
-                System.out.println("文档类: " + ((TypeElement) e).getQualifiedName());
-            }
-        }
-        return true;
-    }
+    @Override
+    public boolean run(DocletEnvironment env) {
+        for (Element e : env.getIncludedElements()) {
+            if (e instanceof TypeElement) {
+                System.out.println("文档类: " + ((TypeElement) e).getQualifiedName());
+            }
+        }
+        return true;
+    }
 }
 ```
 
@@ -917,13 +917,13 @@ javadoc -doclet MyDoclet -docletpath ./out -sourcepath ./src MyClass
 
 如果你想用 JavaDoc 做 Markdown 输出、分析 API 文档结构、生成接口文档（比如 swagger 风格），新 Doclet 就是更好的选择。如果你还在维护旧的 Doclet 插件，建议尽早迁移。
 
-### \[功能] JEP 222: jshell: Java Shell
+#### \[功能] JEP 222: jshell: Java Shell
 
-#### 摘要
+**摘要**
 
 提供一个交互式工具，用于评估 Java 编程语言的声明、语句和表达式，并提供一个 API，以便其他应用程序可以利用此功能。
 
-#### 描述
+**描述**
 
 **功能性**
 
@@ -1072,7 +1072,7 @@ JShell 的无名模块读取的模块集与无名模块的默认根模块集相�
 
 * [http://openjdk.java.net/jeps/261](http://openjdk.java.net/jeps/261)
 
-#### 命名
+**命名**
 
 * 模块
   * `jdk.jshell`
@@ -1091,7 +1091,7 @@ JShell 的无名模块读取的模块集与无名模块的默认根模块集相�
 * OpenJDK 项目
   * Kulla
 
-#### 说明
+**说明**
 
 JEP 222 引入的 [`jshell`](https://openjdk.org/jeps/222) 是 Java 9 中新增的官方 **REPL 工具**（Read-Eval-Print Loop），它让 Java 有了类似 Python、Node.js 那样的交互式命令行工具。
 
@@ -1214,13 +1214,13 @@ jshell --startup DEFAULT # 自定义启动命令
 
 你也可以通过 JShell 集成在 IDE 里（IntelliJ、VSCode）作为实验台。
 
-### \[功能] JEP 223: 新的版本字符串方案
+#### \[功能] JEP 223: 新的版本字符串方案
 
-#### 摘要
+**摘要**
 
 定义一个版本字符串方案，该方案可以轻松区分主要版本、次要版本和安全更新版本，并将其应用于 JDK。
 
-#### 描述
+**描述**
 
 **版本号**
 
@@ -1460,30 +1460,30 @@ Security #1 (GA)  jdk-9.0.1+3
 
 一些工具可能需要同时支持现有和提议的标签格式。
 
-### \[功能] JEP 224: HTML5 Javadoc
+#### \[功能] JEP 224: HTML5 Javadoc
 
-#### 摘要
+**摘要**
 
 增强 javadoc 工具以生成 [HTML5](https://www.w3.org/TR/html5/) 标记。
 
-#### 描述
+**描述**
 
 * 在标准 doclet 中添加了一个命令行选项，用于请求特定类型的输出标记。HTML4 是当前类型，将是默认值。HTML5 将在 JDK 10 中成为默认值。
 * 通过使用结构化 HTML5 元素（如`页眉` 、`页脚`、`导航`、 _等等。_）来提高生成的 HTML 的语义值。
 * HTML5 标记实现了 [WAI-ARIA 标准 ](http://www.w3.org/WAI/intro/aria)，用于可访问性。使用 role 属性将特定角色分配给 HTML 文档中的元素。
 * The `-Xdoclint` 功能已更新，用于检查文档注释中的常见错误，基于请求的输出标记类型。
 
-### JEP 226: UTF-8 properties文件
+#### JEP 226: UTF-8 properties文件
 
-#### 摘要
+**摘要**
 
 定义一种方法，使应用程序能够指定以 UTF-8 编码的属性文件，并扩展 ResourceBundle API 以加载它们
 
-#### 描述
+**描述**
 
 更改 `ResourceBundle` 类的默认文件编码，从 ISO-8859-1 转换为 UTF-8。这样做后，应用程序不再需要使用转义机制转换属性文件。现有的属性文件很少受到影响，因为 ISO-8859-1 的 U+0000-U+007F 与 UTF-8 兼容，而代码点超过 U+00FF 的字符应该已经转义。如果在 UTF-8 中读取属性文件时发生异常，无论是 `MalformedInputException` 还是 `UnmappableCharacterException`，都会重新从头开始读取属性文件，回退到使用 ISO-8859-1 编码。为了在极少数情况下将 ISO-8859-1 属性文件识别为有效的 UTF-8 文件，此 JEP 提供了一种方法，通过设置系统属性"`java.util.PropertyResourceBundle.encoding`"来显式指定编码，无论是 ISO-8859-1 还是 UTF-8。
 
-#### 说明
+**说明**
 
 变化前后总结：
 
@@ -1494,17 +1494,17 @@ Security #1 (GA)  jdk-9.0.1+3
 | 加载类                | `java.util.Properties.load()` | 同上，但编码行为改变          |
 | 工具支持               | `native2ascii` 工具常用           | ✅ 不再需要              |
 
-### \[优化] JEP 227: Unicode 7.0
+#### \[优化] JEP 227: Unicode 7.0
 
 将现有平台 API 升级以支持[版本 7.0](http://www.unicode.org/versions/Unicode7.0.0/) 的 [Unicode 标准](http://www.unicode.org/standard/standard.html)
 
-### \[JVM] JEP 228：添加更多诊断命令
+#### \[JVM] JEP 228：添加更多诊断命令
 
-#### 摘要
+**摘要**
 
 定义额外的诊断命令，以提高 Hotspot 和 JDK 的可诊断性。
 
-#### 描述
+**描述**
 
 这是新命令的列表（确切名称待定）：
 
@@ -1545,13 +1545,13 @@ Security #1 (GA)  jdk-9.0.1+3
 * 在虚拟机或库中设置命令行标志/选项。
 * 负责小组：可用性
 
-### \[优化] JEP 229: 默认创建 PKCS12 密钥库
+#### \[优化] JEP 229: 默认创建 PKCS12 密钥库
 
-#### 摘要
+**摘要**
 
 将默认密钥库类型从 JKS 转换为 [PKCS12](https://en.wikipedia.org/wiki/PKCS_12)。
 
-#### 描述
+**描述**
 
 此功能将默认密钥库类型从 JKS 更改为 PKCS12。默认情况下，新密钥库将以 PKCS12 密钥库格式创建。现有密钥库不会更改，密钥库应用程序可以继续明确指定它们所需的密钥库类型。
 
@@ -1561,13 +1561,13 @@ Security #1 (GA)  jdk-9.0.1+3
 
 可将此密钥库检测机制的支持回滚到早期 JDK 版本。
 
-### \[优化] JEP 231: 删除启动时 JRE 版本选择
+#### \[优化] JEP 231: 删除启动时 JRE 版本选择
 
-#### 概括
+**概括**
 
 删除在 JRE 启动时请求非正在启动的 JRE 版本的能力。
 
-#### 动机
+**动机**
 
 “多个 JRE”（mJRE）功能允许开发者指定可以用于启动应用程序的 JRE 版本或版本范围。版本选择标准可以指定在应用程序的 `jar` 文件（ `JRE-Version` ）的清单条目中，或作为 `java` 启动器的命令行选项（ `-version:` ）。如果启动的 JRE 版本不满足这些标准，则启动器会搜索满足条件的版本，如果找到，则启动该版本。
 
@@ -1575,7 +1575,7 @@ Security #1 (GA)  jdk-9.0.1+3
 
 mJRE 功能仅解决了整体部署问题的一部分。此外，当它在 JDK 5 中引入时，从未得到充分文档记录： `-version:` 选项在 `java` 命令的文档中提到，但 `JRE-Version` 清单条目在任何常规 JDK 文档中都没有提到，也没有在 Java SE 平台规范中提到。据我们所知，这个功能很少被使用。它无谓地复杂化了 Java 启动器的实现，使得维护和增强变得困难。
 
-#### 描述
+**描述**
 
 删除 mJRE 功能。修改启动器如下：
 
@@ -1584,17 +1584,17 @@ mJRE 功能仅解决了整体部署问题的一部分。此外，当它在 JDK 5
 
 在第二种情况下，选择警告而不是致命错误的原因是清单条目可能存在于无法轻易修改的旧 `jar` 文件中，因此继续而不是中止会更好。我们预计将在 JDK 10 中将此情况更改为致命错误。
 
-### \[优化] JEP 232: 提升安全应用程序性能
+#### \[优化] JEP 232: 提升安全应用程序性能
 
-#### 摘要
+**摘要**
 
 改进使用安全管理者安装的应用程序的性能。
 
-#### 描述
+**描述**
 
 我们探索并实现了许多优化和增强，以提高使用安全管理者运行的应用程序的性能。其中一些优化提高了性能，而另一些则没有。还有一些被证明有潜力，但由于各种原因，将不会作为本 JEP 的一部分进行整合。为每个考虑的优化打开了新的 JBS 问题（如果之前不存在），并使用 JMH 创建了微基准测试。
 
-#### 优化
+**优化**
 
 基于测试和社区反馈，我们提高性能的主要关注领域是安全策略的执行和权限的评估。权限类和默认 JDK 策略实现被设计为线程安全的。然而，使用多个线程的性能测试表明，这些类是热点。我们实现了几个改进，以提高吞吐量和减少线程竞争：
 
@@ -1609,13 +1609,13 @@ mJRE 功能仅解决了整体部署问题的一部分。此外，当它在 JDK 5
 * 我们将 `java.security.CodeSource` 的 `hashCode` 方法进行了更改，以避免昂贵的 DNS 查找，通过使用 codesource URL 的字符串形式来计算哈希码。有关更多信息，请参阅 JDK-6826789。
 * 我们增强了 `java.lang.SecurityManager` 的 `checkPackageAccess` 方法的包检查算法。有关更多信息，请参阅 JDK-8072692。
 
-### \[测试] JEP 233: 自动生成运行时编译器测试
+#### \[测试] JEP 233: 自动生成运行时编译器测试
 
-#### 摘要
+**摘要**
 
 开发一个工具，通过自动生成测试用例来测试运行时编译器。
 
-#### 描述
+**描述**
 
 工具将随机生成语法和语义正确的 Java 源代码或字节码，如有必要，将其编译，以解释模式（`-Xint`）和编译模式（`-Xcomp`）运行，并验证结果。
 
@@ -1633,13 +1633,13 @@ Java 源代码编译器 `javac` 不使用 Java 的所有字节码，因此仅生
 
 由于测试生成过程需要花费相当多的时间，因此生成和运行这些测试不应该是预集成测试的一部分。然而，定期运行预生成的测试，用于可靠性测试，以及运行新生成的测试，以获得更好的代码覆盖率是有意义的。发现错误的生成测试应作为常规回归测试集成到适当的测试套件中，并以与其他回归测试相同的方式进行运行。
 
-### \[测试] JEP 235：[测试 javac 生成的类文件属性](https://openjdk.org/jeps/235)
+#### \[测试] JEP 235：[测试 javac 生成的类文件属性](https://openjdk.org/jeps/235)
 
-#### 摘要
+**摘要**
 
 编写测试以验证由 `javac` 生成的类文件属性的准确性。
 
-#### 描述
+**描述**
 
 测试由 `javac` 生成的文件的常用方法是运行编译后的类并验证生成的程序是否按预期行为。这种方法不适用于可选的类文件属性，也不适用于 VM 未验证的属性，因此这两种类型的属性必须通过其他方式测试。将开发出能够接受 Java 源代码作为输入、编译源代码、读取编译后的类文件的类文件属性并验证其正确性的测试。
 
@@ -1683,31 +1683,31 @@ Java 源代码编译器 `javac` 不使用 Java 的所有字节码，因此仅生
 * `异常`
 * `BootstrapMethods`
 
-### \[JVM] JEP 236：[Nashorn 的解析器 API](https://openjdk.org/jeps/236)
+#### \[JVM] JEP 236：[Nashorn 的解析器 API](https://openjdk.org/jeps/236)
 
-#### 摘要
+**摘要**
 
 定义 Nashorn 的 ECMAScript 抽象语法树的支持 API。
 
-#### 动机
+**动机**
 
 NetBeans 等 IDE 使用 Nashorn 进行 ECMAScript 编辑/调试以及 ECMAScript 代码分析。这些工具和框架目前使用 Nashorn 的内部 AST 表示进行代码分析。这种在 `jdk.nashorn.internal.ir` 包及其子包中使用内部类的方法，阻止了 Nashorn 内部实现类的自由演进。本 JEP 将定义一个在公开包 `jdk.nashorn.api.tree` 中的 Nashorn 解析器 API。类似的抽象语法树 API 已在 `javac` 的 `com.sun.source`[ 包及其子包](http://docs.oracle.com/javase/8/docs/jdk/api/javac/tree/index.html)中得到支持。
 
 解析器 API 将使 IDE 和服务器端框架等程序能够进行 ECMAScript 代码分析，而无需这些程序依赖于 Nashorn 的内部实现类。
 
-#### 描述
+**描述**
 
 附件中的 javadoc 文件包含了新 `jdk.nashorn.api.tree` 包中提议的接口和类的文档。API 的起点是 `ParserFactory` 和 `ParserFactoryImpl`。 类。一个 `ParserFactory` 对象接受一个字符串数组，这些字符串是配置解析器的选项。支持的选项与 Nashorn 壳工具 `jjs` 支持的选项相同，以及 nashorn.args Nashorn 脚本引擎的系统属性。
 
 一旦创建了解析器实例，然后从字符串中获取 ECMAScript 源代码 URL 或文件可以提交给解析器，解析器将返回 `编译单元树`对象。任何解析错误将通过调用者提供的 `诊断监听器`对象进行报告。
 
-### \[JVM] JEP 237：[Linux/AArch64 端口](https://openjdk.org/jeps/237)
+#### \[JVM] JEP 237：[Linux/AArch64 端口](https://openjdk.org/jeps/237)
 
-#### 摘要
+**摘要**
 
 将 JDK 9 移植到 Linux/AArch64
 
-#### 描述
+**描述**
 
 我们（AArch64 移植项目）已将 JDK 移植到新的平台：Linux/AArch64。我们已实现了模板解释器、C1（客户端）和 C2（服务器）JIT 编译器。
 
@@ -1725,13 +1725,13 @@ NetBeans 等 IDE 使用 Nashorn 进行 ECMAScript 编辑/调试以及 ECMAScript
 
 所有更改集都收集在一个临时存储库中： [http://hg.openjdk.java.net/aarch64-port/stage/](http://hg.openjdk.java.net/aarch64-port/stage/)
 
-### \[JVM] JEP 238：[多版本 JAR 文件](https://openjdk.org/jeps/238)
+#### \[JVM] JEP 238：[多版本 JAR 文件](https://openjdk.org/jeps/238)
 
-#### 摘要
+**摘要**
 
 扩展 JAR 文件格式，以允许在单个归档中存在多个、针对 Java 版本特定的类文件版本。
 
-#### 描述
+**描述**
 
 JAR 文件有一个内容根，其中包含类和资源，以及一个包含 JAR 元数据的 `META-INF` 目录。通过向特定文件组添加一些版本控制元数据，JAR 格式可以以兼容的方式编码针对不同目标 Java 平台版本的多个库版本。
 
@@ -1793,19 +1793,19 @@ JAR 元数据，例如在 `MANIFEST.MF` 文件中找到的 《META-INF/services�
 
 最终，此机制使库和框架开发者能够将特定 Java 平台发布版本中 API 的使用与要求所有用户迁移到该版本的需求解耦。库和框架维护者可以逐步迁移到并支持新功能，同时仍然支持旧功能，打破鸡生蛋的循环，这样库就可以“Java 9 就绪”，而实际上并不需要 Java 9。
 
-### \[优化] JEP 240：[删除 JVM TI hprof 代理](https://openjdk.org/jeps/240)
+#### \[优化] JEP 240：[删除 JVM TI hprof 代理](https://openjdk.org/jeps/240)
 
-### \[优化] JEP 241：[删除 jhat 工具](https://openjdk.org/jeps/241)
+#### \[优化] JEP 241：[删除 jhat 工具](https://openjdk.org/jeps/241)
 
-### \[JVM] JEP 243：[Java 级 JVM 编译器接口](https://openjdk.org/jeps/243)
+#### \[JVM] JEP 243：[Java 级 JVM 编译器接口](https://openjdk.org/jeps/243)
 
-### \[功能] JEP 244：[TLS应用层协议协商扩展](https://openjdk.org/jeps/244)
+#### \[功能] JEP 244：[TLS应用层协议协商扩展](https://openjdk.org/jeps/244)
 
-#### 摘要
+**摘要**
 
 扩展 `javax.net.ssl` 包以支持 TLS [应用层协议协商（ALPN）扩展 ](http://www.rfc-editor.org/rfc/rfc7301.txt)，它提供了协商 TLS 连接的应用协议的手段
 
-#### 描述
+**描述**
 
 该功能定义了一个公共 API，用于协商在给定的 TLS 连接上可以传输的应用层协议。协议名称在初始 TLS 握手期间由客户端和服务器之间传递。
 
@@ -1825,7 +1825,7 @@ TLS 应用可以使用扩展的 `SSLParameters` 类来获取和设置它可以�
 
 建议的设计遵循了用于的类似 API 方法 [服务器名称指示扩展（JEP 114）](http://openjdk.java.net/jeps/114) 在 JDK 8 中引入，但与 ALPN 值与连接相关联，而不是与 `SSL 会话`相关联有所不同。
 
-#### 说明
+**说明**
 
 JEP 244: **"TLS Application-Layer Protocol Negotiation Extension"**（TLS 应用层协议协商扩展）在 OpenJDK 中引入了对 [**ALPN**](https://tools.ietf.org/html/rfc7301)（Application-Layer Protocol Negotiation）的支持。
 
@@ -1890,13 +1890,13 @@ Negotiated protocol: h2
 
 如果你正在实现基于 HTTP/2 的客户端、gRPC 服务端，或者自己开发 TLS 通讯协议，ALPN 都是必不可少的一环。需要我给出服务端的示例也可以继续补充 👍
 
-### \[JVM] JEP 245：[验证 JVM 命令行标志参数](https://openjdk.org/jeps/245)
+#### \[JVM] JEP 245：[验证 JVM 命令行标志参数](https://openjdk.org/jeps/245)
 
-#### 摘要
+**摘要**
 
 验证所有 JVM 命令行标志的参数，以避免崩溃，并在参数无效时显示适当的错误信息。
 
-#### 描述
+**描述**
 
 任何接口，无论是程序性的还是用户可见的，都必须提供足够的验证输入值的能力。在命令行的情况下，对需要用户指定值的参数实现范围检查是至关重要的。`globals.hpp` 源文件包含了标志值的来源和基本的范围检查。扩展和完善这一点可以提供正确的覆盖范围。
 
@@ -1929,25 +1929,25 @@ uintx UnguardOnExecutionViolation = 3 is outside the allowed range [ 0 ... 2 ]
 
 尽管我们有这种能力，但现有的行为并没有改变，即我们不会对范围限制标志进行限制（即我们不限制），我们在初始化 JVM 时检测错误时遵循现有行为（即我们终止进程）。
 
-### \[JVM] JEP 246：[利用 CPU 指令进行 GHASH 和 RSA](https://openjdk.org/jeps/246)
+#### \[JVM] JEP 246：[利用 CPU 指令进行 GHASH 和 RSA](https://openjdk.org/jeps/246)
 
 通过利用最近引入的 SPARC 和 Intel x64 CPU 指令，提高 GHASH 和 RSA 加密操作的性能。
 
-### \[JVM] JEP 247：[针对旧平台版本进行编译](https://openjdk.org/jeps/247)
+#### \[JVM] JEP 247：[针对旧平台版本进行编译](https://openjdk.org/jeps/247)
 
 增强 `javac` 以使其能够将 Java 程序编译为在选定的旧平台版本上运行。
 
-### \[JVM] JEP 248：[将 G1 设为默认垃圾收集器](https://openjdk.org/jeps/248)
+#### \[JVM] JEP 248：[将 G1 设为默认垃圾收集器](https://openjdk.org/jeps/248)
 
 在 32 位和 64 位服务器配置上，将 G1 作为默认垃圾回收器。
 
-### \[功能] JEP 249：[TLS 的 OCSP 装订](https://openjdk.org/jeps/249)
+#### \[功能] JEP 249：[TLS 的 OCSP 装订](https://openjdk.org/jeps/249)
 
-#### 摘要
+**摘要**
 
 通过 TLS 证书状态请求扩展（RFC 6066 的第 8 节）和多个证书状态请求扩展（RFC 6961）实现 OCSP Stapling。
 
-#### 描述
+**描述**
 
 此功能将在 `SunJSSE` 提供者实现中实现。计划进行一些小的 API 更改，目标是尽可能保持这些更改最小。实现将选择合理的 OCSP 特定参数默认值，并通过以下系统属性提供这些默认值的配置：
 
@@ -1989,7 +1989,7 @@ uintx UnguardOnExecutionViolation = 3 is outside the allowed range [ 0 ... 2 ]
 * 服务器端 stapling 支持将通过上述系统属性进行调节。
 * `StatusResponseManager` 是在 `SSLContext` 实例化过程中创建的。属性值在 `SSLContext` 构建期间进行采样。这些属性值可以被更改，并且当创建一个新的 `SSLContext` 对象时，StatusResponseManager 将具有这些新值。
 
-#### Stapling 和 X509ExtendedTrustManagers
+**Stapling 和 X509ExtendedTrustManagers**
 
 开发者在如何处理通过 OCSP Stapling 提供的响应方面有一定的灵活性。本 JEP 对证书路径检查和吊销检查的现有方法没有任何更改。这意味着可以同时让客户端和服务器断言 `status_request` 扩展，通过 `CertificateStatus` 消息获取 OCSP 响应，并允许用户在如何响应吊销信息或缺乏吊销信息方面具有灵活性。
 
@@ -2006,13 +2006,13 @@ uintx UnguardOnExecutionViolation = 3 is outside the allowed range [ 0 ... 2 ]
 
 关于 `PKIXBuilderParameters` 和 `PKIXRevocationChecker` 对象的配置及其与 JSSE 关系的更多详细信息，可以在 Java PKI API 程序员指南和 JSSE 参考指南中找到。
 
-### \[JVM] JEP 250：[将内部字符串存储在 CDS 档案中](https://openjdk.org/jeps/250)
+#### \[JVM] JEP 250：[将内部字符串存储在 CDS 档案中](https://openjdk.org/jeps/250)
 
-#### 摘要
+**摘要**
 
 在类数据共享（CDS）归档中存储内部字符串。
 
-#### 描述
+**描述**
 
 在转储时间，在堆初始化期间在 Java 堆中分配一个指定的字符串空间。在写入内部字符串表和 `String` 对象时，修改指向内部 `String` 对象及其底层 `char`-数组对象的指针，就像这些对象来自指定的空间一样。
 
@@ -2026,17 +2026,17 @@ uintx UnguardOnExecutionViolation = 3 is outside the allowed range [ 0 ... 2 ]
 
 G1 字符串去重表是一个独立的哈希表，包含用于运行时去重的 `char` 数组。当一个字符串被内部化并添加到 `StringTable` 时，该字符串将被去重，如果它尚未存在于其中，则将底层的 `char` 数组添加到去重表中。去重表不会存储到存档中。去重表在虚拟机启动时使用共享字符串数据填充。作为一个优化，这项工作在 `G1StringDedupThread` （在 `G1StringDedupThread::run()` 之后，在 `initialize_in_thread()` 之前）完成，以减少启动时间。共享字符串的哈希值在转储时预先计算并存储在字符串中，以避免在运行时去重代码写入哈希值。
 
-### \[UI] JEP 251：[多分辨率图像](https://openjdk.org/jeps/251)
+#### \[UI] JEP 251：[多分辨率图像](https://openjdk.org/jeps/251)
 
 定义一个多分辨率图像 API，以便可以轻松地操作和显示具有分辨率变体的图像。
 
-### \[功能] JEP 252：[默认使用 CLDR 区域设置数据](https://openjdk.org/jeps/252)
+#### \[功能] JEP 252：[默认使用 CLDR 区域设置数据](https://openjdk.org/jeps/252)
 
-#### 摘要
+**摘要**
 
 使用通用区域数据存储库（CLDR）中的区域数据来格式化日期、时间、货币、语言、国家和时区，在标准的 Java API 中。由 Unicode 联盟维护的 CLDR 提供的区域数据质量高于 JDK 8 中的传统数据。区域敏感的应用程序可能会受到切换到 CLDR 区域数据的影响，以及未来 CLDR 区域数据的修订。
 
-#### 描述
+**描述**
 
 在 JDK 8 及以后的版本中，存在两个内置的 locale 数据提供者： `JRE` ，它提供来自 20 世纪 90 年代的遗留 locale 数据，以及 `CLDR` ，它提供来自 Unicode 联盟的 CLDR locale 数据。
 
@@ -2229,17 +2229,17 @@ $ java -Djava.locale.providers=CLDR,JRE ...
 * JDK 21：如果在启动时系统属性 `java.locale.providers` 的值中指定了 `JRE` 或 `COMPAT` ，则 Java 运行时将发出有关即将删除遗留区域数据的警告信息。
 * JDK 23：我们将不再将遗留区域数据包含在 JDK 中。通过 `-Djava.locale.providers=...` 指定 `JRE` 或 `COMPAT` 将没有任何效果。
 
-### \[UI] JEP 253：[准备 JavaFX UI 控件和 CSS API 以实现模块化](https://openjdk.org/jeps/253)
+#### \[UI] JEP 253：[准备 JavaFX UI 控件和 CSS API 以实现模块化](https://openjdk.org/jeps/253)
 
 定义 JavaFX UI 控件和 CSS 功能性的公共 API，这些功能目前仅通过内部 API 提供，因此将因模块化而变得不可访问。
 
-### \[功能] JEP 254：[紧凑字符串](https://openjdk.org/jeps/254)
+#### \[功能] JEP 254：[紧凑字符串](https://openjdk.org/jeps/254)
 
-#### 摘要
+**摘要**
 
 采用更节省空间的字符串内部表示形式。
 
-#### 描述
+**描述**
 
 我们提议将 `String` 类的内部表示从 UTF-16 `char` 数组更改为 `byte` 数组加上一个编码标志字段。新的 `String` 类将根据字符串内容存储为 ISO-8859-1/Latin-1（每个字符一个字节）或 UTF-16（每个字符两个字节）编码的字符。编码标志将指示使用哪种编码。
 
@@ -2254,7 +2254,7 @@ $ java -Djava.locale.providers=CLDR,JRE ...
 * [字符串密度性能状态](http://cr.openjdk.java.net/~shade/density/state-of-string-density-v1.txt)
 * [字符串密度对 SPARC 上 SPECjbb2005 的影响](http://cr.openjdk.java.net/~huntch/string-density/reports/String-Density-SPARC-jbb2005-Report.pdf)
 
-#### 说明
+**说明**
 
 JEP 254: **Compact Strings（紧凑字符串）** 是 Java 9 引入的一项优化，旨在 **减少内存占用**，同时 **保持 `String` 类的向后兼容性** 和性能表现。
 
@@ -2271,13 +2271,13 @@ JEP 254 的核心改动是：
 ```
 // Java 8 之前
 class String {
-    private final char[] value;
+    private final char[] value;
 }
-
+​
 // Java 9 之后（简化示意）
 class String {
-    private final byte[] value;
-    private final byte coder; // 0 = LATIN1, 1 = UTF16
+    private final byte[] value;
+    private final byte coder; // 0 = LATIN1, 1 = UTF16
 }
 ```
 
@@ -2327,49 +2327,47 @@ class String {
 | 性能     | 正常              | 持平或略优                      |
 | 向后兼容   | ✅               | ✅                          |
 
-如果你正在开发高并发应用、微服务或内存敏感系统，**紧凑字符串可以让你在不更改代码的前提下获得更高效的内存使用**。需要我演示 Java 9 中如何验证字符串是否使用 LATIN1 吗？
-
-### \[XML] JEP 255：[将选定的 Xerces 2.11.0 更新合并到 JAXP](https://openjdk.org/jeps/255)
+#### \[XML] JEP 255：[将选定的 Xerces 2.11.0 更新合并到 JAXP](https://openjdk.org/jeps/255)
 
 升级 JDK 中包含的 Xerces XML 解析器的版本，以包含来自 [Xerces 2.11.0](https://xerces.apache.org/xerces2-j/) 的重要更改。
 
-### \[UI] JEP 256：[BeanInfo 注释](https://openjdk.org/jeps/256)
+#### \[UI] JEP 256：[BeanInfo 注释](https://openjdk.org/jeps/256)
 
-#### 摘要
+**摘要**
 
 将 `@beaninfo` Javadoc 标签替换为适当的注解，并在运行时处理这些注解以动态生成 `BeanInfo` 类。
 
-#### 动机
+**动机**
 
 简化自定义 `BeanInfo` 类的创建，并使客户端库模块化。
 
-#### 描述
+**描述**
 
 大多数 `BeanInfo` 类在运行时自动生成，但许多 Swing 类仍然在编译时从 `BeanInfo` 类的 `@beaninfo` Javadoc 标签生成。我们建议用以下注解替换 `@beaninfo` 标签，并扩展现有的反射算法以解释它们：
 
 ```
 package java.beans;
 public @interface JavaBean {
-    String description() default "";
-    String defaultProperty() default "";
-    String defaultEventSet() default "";
+    String description() default "";
+    String defaultProperty() default "";
+    String defaultEventSet() default "";
 }
-
+​
 package java.beans;
 public @interface BeanProperty {
-    boolean bound() default true;
-    boolean expert() default false;
-    boolean hidden() default false;
-    boolean preferred() default false;
-    boolean visualUpdate() default false;
-    String description() default "";
-    String[] enumerationValues() default {};
+    boolean bound() default true;
+    boolean expert() default false;
+    boolean hidden() default false;
+    boolean preferred() default false;
+    boolean visualUpdate() default false;
+    String description() default "";
+    String[] enumerationValues() default {};
 }
-
+​
 package javax.swing;
 public @interface SwingContainer {
-    boolean value() default true;
-    String delegate() default "";
+    boolean value() default true;
+    String delegate() default "";
 }
 ```
 
@@ -2377,17 +2375,17 @@ public @interface SwingContainer {
 
 这些注解将在运行时设置相应的功能属性。 在生成 `BeanInfo` 时，这些注解将设置相应的功能属性。这将使开发者能够直接在 Bean 类中指定这些属性，而不是为每个 Bean 类创建一个单独的 `BeanInfo` 类。这还将允许删除自动生成的类，从而更容易地对客户端库进行模块化。
 
-### \[UI] JEP 257：[将 JavaFX/Media 更新到较新版本的 GStreamer](https://openjdk.org/jeps/257)
+#### \[UI] JEP 257：[将 JavaFX/Media 更新到较新版本的 GStreamer](https://openjdk.org/jeps/257)
 
-### \[UI] JEP 258：[HarfBuzz字体布局引擎](https://openjdk.org/jeps/258)
+#### \[UI] JEP 258：[HarfBuzz字体布局引擎](https://openjdk.org/jeps/258)
 
-### \[功能] JEP 259：[堆栈遍历 API](https://openjdk.org/jeps/259)
+#### \[功能] JEP 259：[堆栈遍历 API](https://openjdk.org/jeps/259)
 
-#### 摘要
+**摘要**
 
 定义一个高效的标准化堆栈跟踪 API，允许轻松过滤和延迟访问堆栈跟踪中的信息。
 
-#### 描述
+**描述**
 
 本 JEP 将定义一个支持惰性、帧过滤、支持短路径遍历（在匹配给定标准的帧处停止）以及支持长路径遍历（遍历整个调用栈）的调用栈遍历 API。
 
@@ -2426,7 +2424,7 @@ List<StackFrame> stack =
 walk((s) -> s.map(StackFrame::declaringClass).skip(2).findFirst());
 ```
 
-#### 说明
+**说明**
 
 JEP 259: **Stack-Walking API** 引入了一个新的、**高效且可配置的堆栈遍历 API**，用于替代传统的 `Throwable::getStackTrace()` 和 `Thread::getStackTrace()`，提供了更灵活、延迟加载、按需过滤的调用栈访问方式。
 
@@ -2450,22 +2448,22 @@ JEP 259: **Stack-Walking API** 引入了一个新的、**高效且可配置的�
 ```
 import java.lang.StackWalker;
 import java.lang.StackWalker.Option;
-
+​
 public class StackWalkerExample {
-    public static void main(String[] args) {
-        methodA();
-    }
-
-    static void methodA() {
-        methodB();
-    }
-
-    static void methodB() {
-        StackWalker walker = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-        walker.forEach(frame -> {
-            System.out.println("Class: " + frame.getClassName() + ", Method: " + frame.getMethodName());
-        });
-    }
+    public static void main(String[] args) {
+        methodA();
+    }
+​
+    static void methodA() {
+        methodB();
+    }
+​
+    static void methodB() {
+        StackWalker walker = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+        walker.forEach(frame -> {
+            System.out.println("Class: " + frame.getClassName() + ", Method: " + frame.getMethodName());
+        });
+    }
 }
 ```
 
@@ -2483,7 +2481,7 @@ Class: StackWalkerExample, Method: main
 ```
 StackWalker walker = StackWalker.getInstance();
 String caller = walker.walk(frames ->
-    frames.skip(1).findFirst().map(StackWalker.StackFrame::getClassName).orElse("unknown")
+    frames.skip(1).findFirst().map(StackWalker.StackFrame::getClassName).orElse("unknown")
 );
 System.out.println("Caller: " + caller);
 ```
@@ -2504,13 +2502,13 @@ System.out.println("Caller: " + caller);
 | 是否可保留类引用   | ❌ 只能拿类名                      | ✅ 可拿 `Class<?>` 对象   |
 | 是否支持并行安全遍历 | ❌                            | ✅                    |
 
-### \[功能] JEP 260：[封装大多数内部 API](https://openjdk.org/jeps/260)
+#### \[功能] JEP 260：[封装大多数内部 API](https://openjdk.org/jeps/260)
 
-#### 摘要
+**摘要**
 
 默认情况下封装 JDK 的大部分内部 API，使其在编译时不可访问，并为未来版本做准备，届时它们将在运行时不可访问。确保关键且广泛使用的内部 API 不会被封装，以便在所有或大多数功能有支持的替代方案之前保持可访问
 
-#### 描述
+**描述**
 
 基于对包括 Maven Central 在内的各种大型代码库的分析，以及自 JDK 8 及其依赖分析工具（ `jdeps` ）发布以来收到的反馈，我们将 JDK 的内部 API 分为两大类：
 
@@ -2545,7 +2543,7 @@ JDK 9 中所有非 critical 内部 API 都被封装。
 
 对于使用 JDK 9 中存在替代方案的临界内部 API 的库的维护者，可能希望使用多版本 JAR 文件（JEP 238）来发布单件工件，以便在 JDK 9 之前的版本中使用旧 API，在后续版本中使用替代 API。
 
-#### 说明
+**说明**
 
 JEP 260: **"Encapsulate Most Internal APIs"（封装大多数内部 API）**，从 Java 9 开始对内部 JDK API（如 `sun.*`, `com.sun.*`）进行封装，**默认不再对外开放访问**，这对**日常 Java 开发可能会带来一些影响**，尤其是依赖于内部 API 的项目或框架。
 
@@ -2619,13 +2617,13 @@ String encoded = java.util.Base64.getEncoder().encodeToString(bytes);
 * 对 **底层框架开发者**、**工具链维护者**，JEP 260 是一记警钟：**不要依赖内部 API**
 * **长远来看**，这是 Java 模块化、安全性、稳定性的关键一步
 
-### \[功能] JEP 261：[模块系统](https://openjdk.org/jeps/261)
+#### \[功能] JEP 261：[模块系统](https://openjdk.org/jeps/261)
 
-#### 摘要
+**摘要**
 
 实施 Java 平台模块系统，该系统由 [JSR 376](http://openjdk.java.net/projects/jigsaw/spec/) 规定，并包括相关的 JDK 特定更改和增强。
 
-#### 描述
+**描述**
 
 Java 平台模块系统（JSR 376）指定了对 Java 编程语言、Java 虚拟机和标准 Java API 的更改和扩展。本 JEP 实现了该规范。因此， `javac` 编译器、HotSpot 虚拟机和运行时库将模块作为 Java 程序组件的一种基本新类型实现，并在开发的所有阶段提供模块的可靠配置和强封装。
 
@@ -2702,7 +2700,7 @@ _`java.se` 模块在 JDK 11 及以后的版本中仍然存在，但它不再是�
 
 作为最后的特殊情况，在运行时和链接时，如果 `<module>` 是 `ALL-MODULE-PATH` ，则将所有在相关模块路径上找到的可观察模块添加到根集。 `ALL-MODULE-PATH` 在编译时和运行时都有效。这是为构建工具（如 Maven）提供的，这些工具已经确保了模块路径上的所有模块都是必需的。这也是将自动模块添加到根集的便捷方式。
 
-#### 限制可观察模块
+**限制可观察模块**
 
 有时限制可观察的模块对于调试或减少主模块（由应用程序类加载器为类路径定义的无名模块）解析的模块数量是有用的。可以在任何阶段使用 `--limit-modules` 选项来完成此操作。其语法如下：
 
@@ -3154,17 +3152,17 @@ java.rmi                    jdk.unsupported
 
 包含此处描述的更改的早期访问版本在整个模块系统开发过程中都可用。强烈鼓励 Java 社区的成员测试他们的工具、库和应用程序，以帮助识别兼容性问题。
 
-### \[UI] JEP 262：[TIFF 图像 I/O](https://openjdk.org/jeps/262)
+#### \[UI] JEP 262：[TIFF 图像 I/O](https://openjdk.org/jeps/262)
 
-### \[UI] JEP 263：[Windows 和 Linux 上的 HiDPI 图形](https://openjdk.org/jeps/263)
+#### \[UI] JEP 263：[Windows 和 Linux 上的 HiDPI 图形](https://openjdk.org/jeps/263)
 
-### \[功能] JEP 264：[平台日志记录 API 和服务](https://openjdk.org/jeps/264)
+#### \[功能] JEP 264：[平台日志记录 API 和服务](https://openjdk.org/jeps/264)
 
-#### 摘要
+**摘要**
 
 定义一个最小的日志 API，平台类可以使用它来记录消息，同时提供一个服务接口，供消息的消费者使用。库或应用程序可以提供此服务的实现，以便将平台日志消息路由到其选择的日志框架。如果没有提供实现，则使用基于 `java.util.logging` API 的默认实现。
 
-#### 描述
+**描述**
 
 使用 `java.util.ServiceLoader` API，一个系统级的 `LoggerFinder` 实现位于并使用系统类加载器加载。如果没有找到具体实现，则使用 JDK 内部默认的 实现的 `LoggerFinder` 服务。默认服务的实现当存在 `java.util.logging` 模块时，使用作为后端，因此默认情况下，日志消息会被路由到 `java.util.logging.Logger`，就像之前一样。然而， `LoggerFinder` 服务使得应用程序/框架能够插入自己的外部日志后端，而无需配置 `java.util.logging` 和该后端。 `LoggerFinder` 服务使得应用程序/框架能够插入自己的外部日志后端，而无需配置 `java.util.logging` 和该后端。
 
@@ -3188,7 +3186,7 @@ public class System {
 
 JDK 内部 API 将被修订，以便通过这些方法返回的系统日志记录器发出日志消息。
 
-#### 说明
+**说明**
 
 JEP 264: **Platform Logging API and Service** 是 Java 9 引入的，用于规范和统一 Java 平台自身的日志输出行为，同时提供一个标准化的扩展点，**允许应用控制 JDK 内部模块的日志行为**。
 
@@ -3244,10 +3242,10 @@ logger.log(System.Logger.Level.INFO, "Hello from platform logger!");
 
 ```
 public class MyLoggerFinder extends System.LoggerFinder {
-    @Override
-    public System.Logger getLogger(String name, Module module) {
-        return new MyCustomLogger(name); // 你自己的 Logger 实现
-    }
+    @Override
+    public System.Logger getLogger(String name, Module module) {
+        return new MyCustomLogger(name); // 你自己的 Logger 实现
+    }
 }
 ```
 
@@ -3280,15 +3278,15 @@ com.example.MyComponent.level = FINE
 
 **JEP 264 把 JDK 自己的日志输出“规范化”和“模块化”了，让你可以用自己的方式统一管理和捕捉这些日志**。这对开发中调试、性能分析、日志隔离都非常有用。
 
-### \[UI] JEP 265：[Marlin 图形渲染器](https://openjdk.org/jeps/265)
+#### \[UI] JEP 265：[Marlin 图形渲染器](https://openjdk.org/jeps/265)
 
-### \[功能] JEP 266：[更多并发更新](https://openjdk.org/jeps/266)
+#### \[功能] JEP 266：[更多并发更新](https://openjdk.org/jeps/266)
 
-#### 摘要
+**摘要**
 
 一个可互操作的发布-订阅框架，对 `CompletableFuture` API 的增强以及各种其他改进。
 
-#### 描述
+**描述**
 
 1. 支持反应式流发布-订阅框架的接口，嵌套在新的类 `Flow` 中。 `Publisher` 生成由一个或多个 `Subscriber` 消费的项目，每个 `Subscriber` 由一个 `Subscription` 管理。通信依赖于一种简单的流控制形式（方法 `Subscription.request` ，用于传递背压），这可以用来避免在“推送”系统中可能出现的资源管理问题。提供了一个实用类 `SubmissionPublisher` ，开发人员可以使用它来创建自定义组件。 这些（非常小）的接口对应于由 Reactive Streams 倡议定义的接口，并支持在 JVM 上运行的多个异步系统之间的互操作性。将这些接口嵌套在类中是一种保守的策略，允许它们在各种短期和长期可能性中使用。目前没有计划提供基于网络或 I/O 的 `java.util.concurrent` 组件用于分布式消息传递，但未来 JDK 版本可能在其他包中包含此类 API。
 2. 对 `CompletableFuture` API 的增强
@@ -3296,17 +3294,17 @@ com.example.MyComponent.level = FINE
    * 添加了子类增强，使得从 `CompletableFuture` 扩展更容易，例如提供支持替代默认执行器的子类。
 3. 自 JDK 8 以来积累的众多实现改进；其中许多都是小的，但也有一些包括 Javadoc 规范重写。
 
-### \[优化] JEP 267：[Unicode 8.0](https://openjdk.org/jeps/267)
+#### \[优化] JEP 267：[Unicode 8.0](https://openjdk.org/jeps/267)
 
 将现有平台 API 升级以支持[版本 8.0](http://www.unicode.org/versions/Unicode8.0.0/) [Unicode 标准 ](http://www.unicode.org/standard/standard.html)。
 
-### \[xml] JEP 268：[XML 目录](https://openjdk.org/jeps/268)
+#### \[xml] JEP 268：[XML 目录](https://openjdk.org/jeps/268)
 
 制定一个支持的标准 XML 目录 API [OASIS XML 目录标准，v1.1](https://www.oasis-open.org/committees/download.php/14809/xml-catalogs.html)。该 API 将定义目录和目录解析器抽象，这些抽象可以与接受解析器的 JAXP 处理器一起使用。
 
-### \[功能] JEP 269：[集合的便捷工厂方法](https://openjdk.org/jeps/269)
+#### \[功能] JEP 269：[集合的便捷工厂方法](https://openjdk.org/jeps/269)
 
-#### 摘要
+**摘要**
 
 Java 经常因其冗长而受到批评。创建一个小型不可修改的集合（比如一个集合），需要构造它，将其存储在局部变量中，并多次调用 `add()` ，然后将其包装起来。例如，
 
@@ -3354,7 +3352,7 @@ Set<String> set = Set.of("a", "b", "c");
 
 类 `Collections` 中存在现有的工厂方法，用于支持创建空的 `List` 、 `Set` 和 `Map` 。还有用于生成单例 `List` 、 `Set` 和 `Map` 的工厂，这些单例包含一个元素或键值对。 `EnumSet` 包含几个重载的 `of(...)` 方法，可以接受固定或可变数量的参数，方便地创建包含指定元素的 `EnumSet` 。然而，目前还没有一种好的通用方法来创建包含任意类型对象的 `List` 、 `Set` 和 `Map` 。
 
-#### **描述**
+**描述**
 
 在 `Collections` 类中存在组合方法，用于创建不可修改的 `List` 、 `Set` 和 `Map` 。这些方法并不创建本质上不可修改的集合。相反，它们接受另一个集合，并将其包装在一个拒绝修改请求的类中，从而创建原始集合的不修改视图。对底层集合的引用仍然允许修改。每个包装器都是额外的对象，需要额外的间接层，并且比原始集合消耗更多的内存。最后，即使不打算修改，包装的集合仍然承担着支持修改的开销。
 
@@ -3422,13 +3420,13 @@ Map.ofEntries(
 
 将在 JDK 中搜索可以应用这些新 API 的潜在位置。随着时间和计划的允许，这些位置将被更新以使用新 API。
 
-### \[JVM] JEP 270：[为关键部分保留的堆栈区域](https://openjdk.org/jeps/270)
+#### \[JVM] JEP 270：[为关键部分保留的堆栈区域](https://openjdk.org/jeps/270)
 
-#### 摘要
+**摘要**
 
 为关键部分保留额外的线程栈空间，以便即使在栈溢出发生时也能完成。
 
-#### 描述
+**描述**
 
 该解决方案的主要思想是为关键部分在执行栈上预留一些空间，以便它们能够在常规代码因栈溢出而中断的地方完成执行。假设关键部分相对较小，不需要在执行栈上占用巨大的空间才能成功完成。目标不是拯救一个达到其栈限制的故障线程，而是保护在关键部分抛出 `StackOverflowError` 时可能被破坏的共享数据结构。
 
@@ -3440,11 +3438,11 @@ Map.ofEntries(
 
 默认情况下， `jdk.internal.vm.annotation.ReservedStackAccess` 注解仅适用于特权代码（由引导程序或扩展类加载器加载的代码）。特权代码和非特权代码都可以使用此注解，但默认情况下，JVM 会忽略非特权代码。这种默认策略的依据是，临界区保留的栈空间是所有临界区共享的资源。如果任何任意代码能够使用这个空间，那么它就不再是保留空间了，这将破坏整个解决方案。即使在产品构建中，也有一个 JVM 标志可以放松这项策略，允许任何代码都能从中受益。
 
-### \[JVM] JEP 271：[统一 GC 日志记录](https://openjdk.org/jeps/271)
+#### \[JVM] JEP 271：[统一 GC 日志记录](https://openjdk.org/jeps/271)
 
 使用在 [JEP 158](http://openjdk.java.net/jeps/158) 中引入的统一 JVM 日志框架重新实现 GC 日志记录。
 
-#### 描述
+**描述**
 
 以尽可能一致的方式重新实现 GC 日志记录。新格式和旧格式之间必然会有一些差异。
 
@@ -3480,19 +3478,19 @@ log_info(gc, heap, ergo)("Heap expanded");
 
 某些日志记录需要收集早期状态的数据。统一的日志框架允许使用 `jcmd` 动态地开启和关闭所有日志记录。这意味着对于依赖于先前收集数据的日志记录，仅检查日志是否开启是不够的；还必须实施检查以确保数据可用。
 
-### \[UI] JEP 272：[特定于平台的桌面功能](https://openjdk.org/jeps/272)
+#### \[UI] JEP 272：[特定于平台的桌面功能](https://openjdk.org/jeps/272)
 
-### \[功能] JEP 273：[基于DRBG的安全随机实现](https://openjdk.org/jeps/273)
+#### \[功能] JEP 273：[基于DRBG的安全随机实现](https://openjdk.org/jeps/273)
 
 `SecureRandom` 是为加密、认证、token、安全协议等场景提供**不可预测**随机数的工具，JEP 273 让它更快、更灵活、更安全。
 
-### \[功能] JEP 274：[增强方法句柄](https://openjdk.org/jeps/274)
+#### \[功能] JEP 274：[增强方法句柄](https://openjdk.org/jeps/274)
 
-#### 摘要
+**摘要**
 
 增强 `MethodHandle`、`MethodHandles` 和 `MethodHandles.Lookup` 通过新的 `MethodHandle` 组合子和查找细化，简化 `java.lang.invoke` 包的类，以方便常见用例并使编译器优化更好。 组合子和查找细化。
 
-#### 描述
+**描述**
 
 **循环组合器**
 
@@ -3788,7 +3786,7 @@ tf(arg*) =>
 
     此操作尝试访问给定的类，应用由隐式访问上下文定义的限制。如果访问不可行，该方法将引发适当的异常。
 
-#### 说明
+**说明**
 
 JEP 274: **Enhanced Method Handles** 是对 Java 中 `java.lang.invoke.MethodHandle` API 的增强，主要目标是：
 
@@ -3886,13 +3884,13 @@ JEP 274 的增强让我们：
 
 JEP 274 把 Java 的 `MethodHandle` 变成了“函数式第一类公民”，你可以像拼乐高一样组合方法逻辑，灵活、高性能、可读性提升。
 
-### JEP 275：[模块化 Java 应用程序打包](https://openjdk.org/jeps/275)
+#### JEP 275：[模块化 Java 应用程序打包](https://openjdk.org/jeps/275)
 
-#### 摘要
+**摘要**
 
 将 [Project Jigsaw](http://openjdk.java.net/projects/jigsaw) 的功能集成到 Java 打包器中，包括模块意识和自定义运行时创建。
 
-#### 描述
+**描述**
 
 在大多数情况下，Java 打包器的工作流程将保持不变。将添加来自 Jigsaw 的新工具，并在某些情况下替换一些步骤。
 
@@ -4023,15 +4021,15 @@ jdk.packager 包含构建应用程序捆绑包和安装程序的 Java 打包器�
 
 生成的捆绑包将取决于输入和提供的选项。历史上，-deploy 会生成所有原生捆绑包和 .jnlp 文件。现在，与 -module 结合使用 -deploy 不会生成 .jnlp 文件，因为 JNLP 不支持新的模块化选项。-native 选项将生成所有可用的原生捆绑包。
 
-### \[功能] JEP 276：[语言定义对象模型的动态链接](https://openjdk.org/jeps/276)
+#### \[功能] JEP 276：[语言定义对象模型的动态链接](https://openjdk.org/jeps/276)
 
 提供一种链接高级对象操作（如“读取属性”、“写入属性”、“调用可调用对象”等）的机制，这些操作以在 INVOKEDYNAMIC 调用站点中表达的名字表示。提供一种默认链接器，用于在普通 Java 对象上执行这些操作的常用语义，以及安装特定语言链接器的机制。
 
 JEP 276 是为了更好地支持多语言互操作，特别是为动态语言（比如 JavaScript）在 JVM 上运行提供更强的动态链接能力。
 
-### \[功能] JEP 277：[增强的弃用](https://openjdk.org/jeps/277)
+#### \[功能] JEP 277：[增强的弃用](https://openjdk.org/jeps/277)
 
-#### 摘要
+**摘要**
 
 重新设计 `@Deprecated` 注解，并提供加强 API 生命周期的工具。
 
@@ -4217,21 +4215,21 @@ use site     |      API declaration site
 
 如果在最终弃用 API 的使用位置使用 `@SuppressWarnings("removal")` 抑制移除警告，并且该 API 被更改为普通弃用，那么出现普通弃用警告似乎有些奇怪。然而，我们预计 API 从最终弃用回到普通弃用的演变路径相当罕见。
 
-### \[测试] JEP 278：[G1 中针对巨型对象的附加测试](https://openjdk.org/jeps/278)
+#### \[测试] JEP 278：[G1 中针对巨型对象的附加测试](https://openjdk.org/jeps/278)
 
 为 G1 垃圾收集器的“巨无霸对象”功能开发额外的白盒测试。
 
-### \[测试] JEP 279：[改进测试失败故障排除](https://openjdk.org/jeps/279)
+#### \[测试] JEP 279：[改进测试失败故障排除](https://openjdk.org/jeps/279)
 
 自动收集可用于进一步故障排除的诊断信息，以应对测试失败和超时情况。
 
-### \[JVM] JEP 280：[Indify 字符串连接](https://openjdk.org/jeps/280)
+#### \[JVM] JEP 280：[Indify 字符串连接](https://openjdk.org/jeps/280)
 
-#### 摘要
+**摘要**
 
 将由 `javac` 生成的静态 `String` -concatenation 字节码序列更改为使用 `invokedynamic` JDK 库函数调用。这将使未来对 `String` 连接的优化无需对 `javac` 生成的字节码进行进一步更改。
 
-#### 描述
+**描述**
 
 我们将利用 `invokedynamic` 的力量：它提供了懒加载链接的设施，通过在初始调用期间一次启动调用目标。这种方法并不新颖，我们从当前将 lambda 表达式转换为代码的代码中广泛借鉴。
 
@@ -4318,7 +4316,7 @@ $ hg diff -r default:JDK-8085796-indyConcat
 
 建议的实现成功构建了 JDK，运行了回归测试（包括测试 `String` 连接的新测试），并在所有平台上通过了烟雾测试。实际连接可以使用多种策略。我们的建议实现表明，当我们把由 `javac` 生成的字节码序列移动到注入相同字节码的 BSM 中时，没有出现吞吐量下降，这验证了该方法。优化策略的表现与基线相当或更好，尤其是在默认 `StringBuilder` 长度不足或 VM 优化失败时。
 
-#### 说明
+**说明**
 
 JEP 280 通过把字符串拼接改为使用 `invokedynamic`，让 JVM 能动态选择最优实现，从而提升性能。在 **Java 9 及以后**，**使用 `+` 拼接通常和手写的 `StringBuilder.append()` 差不多快，甚至在某些情况下更快**。所以现在推荐的做法是：
 
@@ -4336,11 +4334,11 @@ String s = "a" + b + c + "d";
 
 ```
 new StringBuilder()
-    .append("a")
-    .append(b)
-    .append(c)
-    .append("d")
-    .toString();
+    .append("a")
+    .append(b)
+    .append(c)
+    .append("d")
+    .toString();
 ```
 
 这种方式虽然 OK，但有几个问题：
@@ -4384,11 +4382,11 @@ Java 8 编译后：
 
 ```
 new StringBuilder()
-    .append("Hello, ")
-    .append(name)
-    .append("! Your score is ")
-    .append(score)
-    .toString();
+    .append("Hello, ")
+    .append(name)
+    .append("! Your score is ")
+    .append(score)
+    .toString();
 ```
 
 Java 9+ 编译后：
@@ -4425,17 +4423,17 @@ invokedynamic "makeConcatWithConstants"
 | 好处   | 更高效的拼接、更灵活的优化、更少对象创建                 |
 | 影响   | 编码方式不变，性能自然受益（Java 9+）               |
 
-### \[JVM] JEP 281：[HotSpot C++单元测试框架](https://openjdk.org/jeps/281)
+#### \[JVM] JEP 281：[HotSpot C++单元测试框架](https://openjdk.org/jeps/281)
 
 启用并鼓励为 HotSpot 开发 C++单元测试。
 
-### \[JVM] JEP 282：[jlink：Java 链接器](https://openjdk.org/jeps/282)
+#### \[JVM] JEP 282：[jlink：Java 链接器](https://openjdk.org/jeps/282)
 
-#### 摘要
+**摘要**
 
 创建一个可以组装和优化一组模块及其的工具体 将依赖项打包到自定义运行时镜像中，该镜像定义于 [JEP 220](http://openjdk.java.net/jeps/220)。
 
-#### 描述
+**描述**
 
 链接工具 `jlink` 的基本调用方式是：
 
@@ -4457,21 +4455,21 @@ where:
 * `--help` 打印使用/帮助信息
 * `--version` 打印版本信息
 
-### \[UI] JEP 283：[在 Linux 上启用 GTK 3](https://openjdk.org/jeps/283)
+#### \[UI] JEP 283：[在 Linux 上启用 GTK 3](https://openjdk.org/jeps/283)
 
 启用基于 JavaFX、Swing 或 AWT 的 Java 图形应用程序在 Linux 上使用 GTK 2 或 GTK 3。
 
-### \[JVM] JEP 284：[新的 HotSpot 构建系统](https://openjdk.org/jeps/284)
+#### \[JVM] JEP 284：[新的 HotSpot 构建系统](https://openjdk.org/jeps/284)
 
 使用 build-infra 框架重写 HotSpot 构建系统。
 
-### JEP 285：[旋转等待提示](https://openjdk.org/jeps/285)
+#### JEP 285：[旋转等待提示](https://openjdk.org/jeps/285)
 
-#### 摘要
+**摘要**
 
 定义一个 API，允许 Java 代码提示正在执行自旋循环。
 
-#### 说明
+**说明**
 
 你提到的是 [JEP 285: Spin-Wait Hints](https://openjdk.org/jeps/285)，这是一个很有意思的底层优化功能。
 
@@ -4483,7 +4481,7 @@ where:
 
 ```
 while (!flag) {
-    // do nothing, just wait
+    // do nothing, just wait
 }
 ```
 
@@ -4517,7 +4515,7 @@ java.lang.Thread.onSpinWait()
 
 ```
 while (!flag) {
-    Thread.onSpinWait();
+    Thread.onSpinWait();
 }
 ```
 
@@ -4562,21 +4560,21 @@ while (!flag) {
 | 何时用？                       | 自旋等待时，条件马上可能成立的场景          |
 | 会改变代码行为吗？                  | ❌ 不会，只是性能 hint             |
 
-### \[功能] JEP 287：[SHA-3哈希算法](https://openjdk.org/jeps/287)
+#### \[功能] JEP 287：[SHA-3哈希算法](https://openjdk.org/jeps/287)
 
 实现 NIST FIPS 202 中指定的 SHA-3 加密散列函数（仅支持 BYTE 类型）。
 
-### \[优化] JEP 288：[禁用 SHA-1 证书](https://openjdk.org/jeps/288)
+#### \[优化] JEP 288：[禁用 SHA-1 证书](https://openjdk.org/jeps/288)
 
-### \[优化] JEP 289：[弃用 Applet API](https://openjdk.org/jeps/289)
+#### \[优化] JEP 289：[弃用 Applet API](https://openjdk.org/jeps/289)
 
-### \[功能] JEP 290：[过滤传入的序列化数据](https://openjdk.org/jeps/290)
+#### \[功能] JEP 290：[过滤传入的序列化数据](https://openjdk.org/jeps/290)
 
-#### 摘要
+**摘要**
 
 允许过滤传入的对象序列化数据流，以提高安全性和健壮性。
 
-#### 描述
+**描述**
 
 核心机制是一个由序列化客户端实现的过滤器接口，该接口被设置在 `ObjectInputStream` 上。在反序列化过程中，会调用过滤器接口的方法来验证正在反序列化的类、创建的数组大小，以及描述流长度、流深度和引用数量的指标。过滤器返回一个状态以接受、拒绝或保留状态未决。
 
@@ -4584,7 +4582,7 @@ while (!flag) {
 
 对于 RMI，对象通过设置在 `UnicastServerRef` 上的过滤器来导出，该过滤器对 `MarshalInputStream` 进行过滤，以验证反序列化时的调用参数。通过 `UnicastRemoteObject` 导出对象应支持设置用于反序列化的过滤器。
 
-#### 说明
+**说明**
 
 **JEP 290** 的目的是为了解决传统 Java 序列化机制的一些安全隐患，特别是反序列化过程中潜在的 **远程代码执行** 和 **反序列化漏洞**。
 
@@ -4620,16 +4618,16 @@ JEP 290 通过引入 **过滤机制**，对输入的序列化数据进行检查�
     ```
     import java.io.ObjectInputStream;
     import java.io.ObjectInputFilter;
-
+    ​
     public class MyObjectInputFilter implements ObjectInputFilter {
-        @Override
-        public Status checkInput(FilterInfo filterInfo) {
-            // 只允许反序列化某些类型的数据
-            if (filterInfo.serialClass() != null && filterInfo.serialClass().getName().startsWith("com.mycompany")) {
-                return Status.ALLOWED;
-            }
-            return Status.REJECTED;
-        }
+        @Override
+        public Status checkInput(FilterInfo filterInfo) {
+            // 只允许反序列化某些类型的数据
+            if (filterInfo.serialClass() != null && filterInfo.serialClass().getName().startsWith("com.mycompany")) {
+                return Status.ALLOWED;
+            }
+            return Status.REJECTED;
+        }
     }
     ```
 2.  **配置过滤器**： 你可以在启动应用时设置过滤器：
@@ -4674,20 +4672,16 @@ JEP 290 的最大好处是：
 | **如何使用**    | 使用 `ObjectInputFilter` 创建自定义过滤器，配置过滤规则 |
 | **开发者推荐**   | 任何涉及反序列化的代码，应该考虑使用过滤器来增强安全性            |
 
-***
+#### \[优化] JEP 291：[弃用并发标记清除（CMS）垃圾收集器](https://openjdk.org/jeps/291)
 
-如果你希望我帮你写一个具体的例子，展示如何使用 JEP 290 来保护反序列化流程，告诉我一声，我可以为你提供详细代码！
+#### \[JVM] JEP 292：[在 Nashorn 中实现选定的 ECMAScript 6 功能](https://openjdk.org/jeps/292)
 
-### \[优化] JEP 291：[弃用并发标记清除（CMS）垃圾收集器](https://openjdk.org/jeps/291)
+#### \[JVM] JEP 294：[Linux/s390x 端口](https://openjdk.org/jeps/294)
 
-### \[JVM] JEP 292：[在 Nashorn 中实现选定的 ECMAScript 6 功能](https://openjdk.org/jeps/292)
+#### \[JVM] JEP 295：[提前编译](https://openjdk.org/jeps/295)
 
-### \[JVM] JEP 294：[Linux/s390x 端口](https://openjdk.org/jeps/294)
+#### \[JVM] JEP 297：[统一 arm32/arm64 端口](https://openjdk.org/jeps/297)
 
-### \[JVM] JEP 295：[提前编译](https://openjdk.org/jeps/295)
+#### \[优化] JEP 298：[删除演示和样本](https://openjdk.org/jeps/298)
 
-### \[JVM] JEP 297：[统一 arm32/arm64 端口](https://openjdk.org/jeps/297)
-
-### \[优化] JEP 298：[删除演示和样本](https://openjdk.org/jeps/298)
-
-### \[DOC] JEP 299：[重新组织文档](https://openjdk.org/jeps/299)
+#### \[DOC] JEP 299：[重新组织文档](https://openjdk.org/jeps/299)
