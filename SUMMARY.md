@@ -156,7 +156,8 @@
     * [10.3. 应用程序启动步骤](spring-he-xin-gong-neng/10.-fu-lu/10.3.-ying-yong-cheng-xu-qi-dong-bu-zhou.md)
 * [使用redis实现分布式锁](shi-yong-redis-shi-xian-fen-bu-shi-suo.md)
 * [Java 安全标准算法名称](java-an-quan-biao-zhun-suan-fa-ming-cheng.md)
-* [JDK 9 JEP翻译](jdk-9-jep-fan-yi.md)
+* [JDK 9 JEP](jdk-9-jep.md)
+* [JDK 10 JEP](jdk-10-jep.md)
 
 ## 人件
 
